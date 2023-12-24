@@ -10,30 +10,21 @@ using (HttpClient client = new HttpClient())
 {
     string url = "https://randomuser.me/api?results=50&authuser=0";
     var result = await client.GetAsync(url);
-
-    if (result.IsSuccessStatusCode)
+    string json = await result.Content.ReadAsStringAsync();
+    JObject data = JObject.Parse(json);
+    JArray resultsArray = (JArray)data["results"];
+    foreach (var resultItem in resultsArray)
     {
-        string json = await result.Content.ReadAsStringAsync();
-
-        JObject data = JObject.Parse(json);
-        JArray resultsArray = (JArray)data["results"];
-        foreach (var resultItem in resultsArray)
+        vcards.Add(new VCard
         {
-            vcards.Add(new VCard
-            {
-                Id = resultItem["id"]["value"].ToString(),
-                Firstname = resultItem["name"]["first"].ToString(),
-                Surname = resultItem["name"]["last"].ToString(),
-                Email = resultItem["email"].ToString(),
-                Phone = resultItem["phone"].ToString(),
-                Country = resultItem["location"]["country"].ToString(),
-                City = resultItem["location"]["city"].ToString()
-            });
-        }
-    }
-    else
-    {
-        Console.WriteLine($"Error: {result.StatusCode}");
+            Id = resultItem["id"]["value"].ToString(),
+            Firstname = resultItem["name"]["first"].ToString(),
+            Surname = resultItem["name"]["last"].ToString(),
+            Email = resultItem["email"].ToString(),
+            Phone = resultItem["phone"].ToString(),
+            Country = resultItem["location"]["country"].ToString(),
+            City = resultItem["location"]["city"].ToString()
+        });
     }
 }
 
