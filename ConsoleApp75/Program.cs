@@ -1,18 +1,19 @@
-﻿using ConsoleApp75.Models;
+using ConsoleApp75.Models;
 using Newtonsoft.Json.Linq;
-using System.Text;
-using System.Text.Json;
 
 List<VCard> vcards = new();
-string filePath = "C:\\Users\\Шахвалад\\source\\repos\\ConsoleApp75\\ConsoleApp75\\vcards.json";
+string fileName = "vcards.json";
+string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
 
 using (HttpClient client = new HttpClient())
 {
     string url = "https://randomuser.me/api?results=50&authuser=0";
     var result = await client.GetAsync(url);
     string json = await result.Content.ReadAsStringAsync();
+
     JObject data = JObject.Parse(json);
     JArray resultsArray = (JArray)data["results"];
+
     foreach (var resultItem in resultsArray)
     {
         vcards.Add(new VCard
@@ -31,11 +32,7 @@ using (HttpClient client = new HttpClient())
 foreach (var vcard in vcards)
 {
     var vcardString = vcard.ToVCard();
-    WriteToJson<string>(vcardString, filePath);
+    File.AppendAllText(filePath, vcardString);
 }
 
-void WriteToJson<T>(T data, string filePath)
-{
-    string json = JsonSerializer.Serialize(data);
-    File.AppendAllText(filePath, json + Environment.NewLine);
-}
+
