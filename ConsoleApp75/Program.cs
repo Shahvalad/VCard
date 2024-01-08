@@ -1,3 +1,8 @@
+using ConsoleApp75;
+using ConsoleApp75.Exceptions;
+using ConsoleApp75.Models;
+using Newtonsoft.Json.Linq;
+
 string fileName = "vcards.txt";
 string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
 
